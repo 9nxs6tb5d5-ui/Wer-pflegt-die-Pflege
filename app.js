@@ -88,7 +88,10 @@ const roomState = {
 
 function setRoomActive(roomId, on) {
   roomState[roomId].active = on;
-  roomEls?.[roomId]?.classList.toggle("is-blinking", on);
+if (roomEls && roomEls[roomId]) {
+    roomEls[roomId].classList.toggle("is-blinking", on);
+}
+
 }
 function cancelRoomRepeats(roomId) {
   const ids = roomState[roomId].repeatIds || [];
