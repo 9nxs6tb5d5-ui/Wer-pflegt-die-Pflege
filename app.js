@@ -446,8 +446,14 @@ function startStepsRandom() {
    Screens
 ========================================================= */
 function showScreen(which) {
-  for (const k of Object.keys(screens)) screens[k]?.classList.remove("is-active");
-  screens[which]?.classList.add("is-active");
+  for (const k of Object.keys(screens)) {
+    if (screens[k]) {
+      screens[k].classList.remove("is-active");
+    }
+  }
+  if (screens[which]) {
+    screens[which].classList.add("is-active");
+  }
 }
 
 /* =========================================================
