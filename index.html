@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Klinisches Dokumentationssystem</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- LOGIN -->
+    <section id="screen-login" class="screen is-active" aria-label="Login">
+      <div class="card">
+        <div class="login-header">
+          <div class="title">Klinisches Dokumentationssystem</div>
+        </div>
+
+        <form id="login-form" class="form">
+          <label class="label" for="pw">Benutzerkennwort</label>
+          <input id="pw" name="pw" class="input" type="password" autocomplete="off" />
+
+          <button class="btn primary" type="submit">Anmelden</button>
+
+          <div id="login-error" class="error hidden" role="alert">
+            Ungültiges Kennwort. Bitte erneut versuchen.
+          </div>
+
+          <div class="kiosk-banner" role="note">
+            <div class="kiosk-banner-title"><strong>WICHTIG</strong></div>
+            <div class="kiosk-banner-text">Bitte Kopfhörer aufsetzen.</div>
+            <div class="kiosk-banner-sub">Die Erfahrung funktioniert nur mit Ton.</div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- SYSTEM -->
+    <section id="screen-system" class="screen" aria-label="System">
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="chip">Benutzer: <strong>Pflegekraft</strong></span>
+        </div>
+        <div class="topbar-right">
+          <span class="chip">Uhrzeit: <strong id="clock">08:12</strong></span>
+          <button id="btn-reset" class="btn subtle" title="Reset (Admin)">Reset</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <!-- Left -->
+        <aside class="panel">
+          <div class="panel-title">Raumübersicht</div>
+
+          <ul class="todo">
+            <li id="todo-room1" class="todo-item" data-room="1"><span class="box"></span><span>Raum 1</span></li>
+            <li id="todo-room2" class="todo-item" data-room="2"><span class="box"></span><span>Raum 2</span></li>
+            <li id="todo-room3" class="todo-item" data-room="3"><span class="box"></span><span>Raum 3</span></li>
+            <li id="todo-room4" class="todo-item" data-room="4"><span class="box"></span><span>Raum 4</span></li>
+            <li id="todo-room5" class="todo-item" data-room="5"><span class="box"></span><span>Raum 5</span></li>
+
+            <li class="todo-sep"></li>
+
+            <li id="todo-doc" class="todo-item is-active">
+              <span class="box checked"></span>
+              <span>Dokumentation – Pflegebericht</span>
+            </li>
+          </ul>
+
+          <div class="small">
+            <div class="muted">Hinweis:</div>
+            <div class="muted">Bitte schließen Sie Ihre Dokumentationen zeitnah ab.</div>
+          </div>
+        </aside>
+
+        <!-- Center -->
+        <section class="panel">
+          <div class="panel-title">Pflegebericht – Raum 7</div>
+
+          <form id="doc-form" class="doc">
+            <div class="field">
+              <div class="label">Mobilisation durchgeführt?</div>
+              <div class="row">
+                <label class="radio"><input type="radio" name="mobil" value="ja"> Ja</label>
+                <label class="radio"><input type="radio" name="mobil" value="nein"> Nein</label>
+              </div>
+              <div class="field-error hidden" data-err="mobil">Bitte auswählen.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="pain">Schmerzskala (0–10)</label>
+              <input id="pain" class="input" type="number" min="0" max="10" />
+              <div class="field-error hidden" data-err="pain">Wert 0–10 eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="bp">Blutdruck (mmHg)</label>
+              <input id="bp" class="input" type="text" placeholder="z.B. 120/80" />
+              <div class="field-error hidden" data-err="bp">Bitte im Format 120/80 eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="pulse">Puls (bpm)</label>
+              <input id="pulse" class="input" type="number" min="30" max="220" />
+              <div class="field-error hidden" data-err="pulse">Bitte gültigen Wert eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="temp">Temperatur (°C)</label>
+              <input id="temp" class="input" type="number" step="0.1" min="34" max="42" />
+              <div class="field-error hidden" data-err="temp">Bitte gültigen Wert eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="weight">Gewicht (kg)</label>
+              <input id="weight" class="input" type="number" step="0.1" min="20" max="250" />
+              <div class="field-error hidden" data-err="weight">Bitte gültigen Wert eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="defecation">Ausscheidung (Stuhlgang)</label>
+              <select id="defecation" class="input">
+                <option value="">Bitte wählen…</option>
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+                <option value="unbekannt">Unbekannt</option>
+              </select>
+              <div class="field-error hidden" data-err="defecation">Bitte auswählen.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="io">Ein-/Ausfuhr (ml)</label>
+              <input id="io" class="input" type="number" step="10" min="0" max="10000" placeholder="z.B. 1800" />
+              <div class="field-error hidden" data-err="io">Bitte gültigen Wert eingeben.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="food">Nahrungsaufnahme</label>
+              <select id="food" class="input">
+                <option value="">Bitte wählen…</option>
+                <option value="voll">Vollständig</option>
+                <option value="teil">Teilweise</option>
+                <option value="keine">Keine</option>
+              </select>
+              <div class="field-error hidden" data-err="food">Bitte auswählen.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="notes">Bemerkungen</label>
+              <textarea id="notes" class="input textarea" rows="4" placeholder="Kurze Notiz eingeben…"></textarea>
+            </div>
+
+            <div class="actions">
+              <button id="btn-save" class="btn" type="button">Speichern</button>
+              <button id="btn-finish" class="btn primary" type="button">Abschließen</button>
+              <span id="save-status" class="status muted"></span>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <!-- Modal -->
+      <div id="modal" class="modal hidden" aria-hidden="true">
+        <div id="modal-stack" class="modal-stack" aria-label="Meldungen"></div>
+      </div>
+
+      <!-- Blackout -->
+      <div id="blackout" class="blackout hidden" aria-hidden="true"></div>
+    </section>
+
+    <!-- END -->
+    <section id="screen-end" class="screen" aria-label="Ende">
+      <div class="endcard">
+        <div id="crash-state" class="crash-state">
+          <div class="crash-title">Programm unterbrochen.</div>
+          <div class="crash-sub">Bitte warten…</div>
+        </div>
+
+        <div id="reveal-state" class="reveal-state hidden">
+          <div class="end-question">Wer pflegt die Pflege?</div>
+          <div class="end-small">Das System erwartet Perfektion unter Bedingungen, die sie unmöglich machen.</div>
+          <button id="btn-restart" class="btn primary">Neu starten</button>
+          <!-- Fact-Box wird per JS hier eingefügt -->
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Timer overlay (nur einmal!) -->
+  <div id="timer-overlay" class="hidden" aria-hidden="true">
+    <div id="timer-text">00:05</div>
+    <div id="timer-reaction" class="timer-reaction hidden">
+      <div id="timer-reaction-title" class="timer-reaction-title">Reaktion</div>
+      <div id="timer-reaction-body" class="timer-reaction-body"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

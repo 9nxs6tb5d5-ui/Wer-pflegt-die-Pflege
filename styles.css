@@ -1,0 +1,650 @@
+/* Flicker effect for Big Switch (improved, less destructive) */
+body.flicker {
+  /* keine harte Hintergrundfarbe erzwingen -> sonst killt es Pinkmode/Layout */
+  filter: brightness(2.2) contrast(2.2) grayscale(0.2);
+  transition: none !important;
+  will-change: filter;
+}
+
+/* Make Feltful font 20% darker */
+.feltful-darker {
+  color: #0F1923 !important; /* 20% darker than #13202C */
+}
+
+.end-question, .end-small {
+  color: #fff !important;
+}
+
+@font-face{
+  font-family: "Feltful";
+  src: url("assets/fonts/feltful_regular.otf") format("opentype");
+  font-display: swap;
+}
+
+/* =========================================================
+   BASE / PALETTE
+========================================================= */
+:root{
+  --bg:#DBE2EA;
+  --panel:#F3F7FB;
+  --card:#EDF3F9;
+  --text:#13202C;
+  --muted:#516476;
+  --line:#A9B8C8;
+
+  --warn:#AF675E;
+  --orange:#E64D39;
+  --red:#DE2C41;
+
+  --shadow: 0 18px 40px rgba(0,0,0,.18);
+  --radius: 12px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--bg);
+  color:var(--text);
+}
+
+.hidden{ display:none !important; }
+.muted{ color: var(--muted); }
+
+/* =========================================================
+   SCREENS
+========================================================= */
+.screen{
+  display:none;
+  min-height:100vh;
+  padding:28px;
+}
+.screen.is-active{ display:block; }
+
+/* =========================================================
+   CARD / FORM
+========================================================= */
+.card{
+  max-width:520px;
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding:26px;
+}
+
+.title{ font-size:22px; font-weight:800; }
+.subtitle{ margin-top:6px; color:var(--muted); }
+
+.form{ margin-top:18px; display:grid; gap:12px; }
+.label{ font-size:13px; color:var(--muted); }
+.input{
+  width:100%;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#ffffff;
+  color:var(--text);
+  padding:12px 12px;
+  outline:none;
+}
+.input:focus{ border-color:#6E8CA8; box-shadow: 0 0 0 3px rgba(110,140,168,.18); }
+.textarea{ resize:none; }
+
+.error{ color: var(--red); font-size:13px; }
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+.btn{
+  border:1px solid var(--line);
+  background:#ffffff;
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn:hover{ border-color:#7F97AE; }
+.btn:active{ transform: translateY(1px); }
+.btn.primary{
+  background:#2C5784;
+  border-color:#2C5784;
+  color:#fff;
+}
+.btn.subtle{
+  background: transparent;
+  color: var(--muted);
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+#screen-login{
+  display:none;
+  min-height:100vh;
+  padding:28px;
+}
+#screen-login.is-active{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#screen-login .card{ margin:0 auto; }
+#screen-login .btn.primary{ filter: brightness(1.2); }
+#screen-login .kiosk-banner{ margin:14px auto 0; text-align:center; }
+#screen-login .kiosk-banner-title{ font-weight:900; }
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.chip{
+  display:inline-flex;
+  gap:6px;
+  align-items:center;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background: rgba(255,255,255,.7);
+  color:var(--muted);
+  font-size:12px;
+  margin-right:8px;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+.layout{
+  display:grid;
+  grid-template-columns: 375px 1fr;
+  gap:14px;
+}
+
+.panel{
+  background: var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding:14px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  min-height: 420px;
+}
+
+.panel-title{
+  font-weight:800;
+  margin-bottom:10px;
+  font-size:14px;
+  color:#2B3B4C;
+}
+
+/* =========================================================
+   TODO
+========================================================= */
+.todo{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+.todo-item{
+  display:flex; gap:10px; align-items:center;
+  padding:10px 10px;
+  border:1px solid var(--line);
+  border-radius: 12px;
+  background:#ffffff;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+.todo-item:active{ transform: translateY(1px); }
+
+.todo-sep{
+  height: 1px;
+  background: var(--line);
+  border-radius: 999px;
+  margin: 8px 0;
+  opacity: .7;
+}
+
+.todo-item.is-active{ border-color:#7F97AE; }
+.box{
+  width:16px; height:16px;
+  border:1px solid #7F97AE;
+  border-radius:4px;
+}
+.box.checked{
+  background:#2C5784;
+  border-color:#2C5784;
+}
+
+.todo-item.is-blinking{
+  animation: todoFillBlink .90s infinite;
+}
+@keyframes todoFillBlink{
+  0%, 55% {
+    background: #FFF;
+    border-color: var(--red);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  60%, 100% {
+    background: rgba(222,44,65,.14);
+    border-color: var(--red);
+    box-shadow: 0 0 12px rgba(222, 44, 65, 0.25);
+  }
+}
+
+/* =========================================================
+   DOC FORM
+========================================================= */
+.doc{ display:grid; gap:12px; }
+.field{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#ffffff;
+}
+.row{ display:flex; gap:18px; margin-top:8px; }
+.radio{ color: var(--text); font-size:13px; }
+.field-error{ margin-top:8px; color: var(--orange); font-size:12px; }
+
+.actions{ display:flex; align-items:center; gap:10px; margin-top:4px; }
+.status{ font-size:12px; }
+.small{ margin-top:12px; font-size:12px; }
+
+/* =========================================================
+   MODAL
+========================================================= */
+.modal{
+  position:fixed; inset:0;
+  background: rgba(0,0,0,.42);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:50;
+}
+/* Ab Pinkmode: Popup-Overlay nicht mehr transparent (harmonischer Flicker) */
+body.pinkmode .modal{
+  background: transparent !important; /* transparent statt rgba*/
+}
+
+.modal-stack{
+  width:min(560px, 92vw);
+  max-height: calc(100vh - 36px);
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.modal-card{
+  background: #ffffff;
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding:18px;
+}
+
+.modal-card.room{
+  border-width: 3px;
+  border-color: rgba(175,103,94,.75);
+  box-shadow: 0 18px 40px rgba(175,103,94,.12);
+}
+
+.modal-card.red{
+  border-width: 4px !important;
+  border-color: rgba(222,44,65,0.9) !important;
+  box-shadow: 0 0 0 1px rgba(222,44,65,0.25), 0 18px 40px rgba(0,0,0,.25);
+}
+
+.modal-card.orange{ border-color: rgba(230,77,57,.55); }
+.modal-card.yellow{ border-color: rgba(90,120,150,.35); }
+
+/* Intro-Box: weißer Rahmen */
+.modal-card.intro{
+  border: 4px solid #ffffff !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,.25);
+}
+
+.modal-title{ font-weight:900; margin-bottom:10px; }
+.modal-body{ color: var(--text); white-space: pre-line; }
+.modal-actions{
+  margin-top:16px; display:flex; justify-content:flex-end; gap:10px;
+}
+.modal-actions.two{ justify-content:space-between; }
+.modal-actions.center{ justify-content:center !important; }
+
+/* =========================================================
+   TIMER OVERLAY
+========================================================= */
+#timer-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+}
+#timer-text{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #4C0F16;
+  opacity: 0.88;
+  font-size: min(90vh, 90vw);
+  transform: scaleX(0.595);
+  transform-origin: center;
+}
+.timer-reaction{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 92vw);
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.28);
+  padding: 16px 18px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  opacity: 0.78;
+  pointer-events: none;
+}
+.timer-reaction-title{
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.92);
+}
+.timer-reaction-body{
+  white-space: pre-line;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #fff;
+}
+
+/* =========================================================
+   TOUR OVERLAY (Basis)
+========================================================= */
+.tour-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0,0,0,0.45);
+}
+.tour-layer{ position: absolute; inset: 0; }
+.tour-card{
+  position: absolute;
+  width: min(340px, 44vw);
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.25);
+  background: rgba(10,16,25,0.82);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  padding: 14px 16px;
+  backdrop-filter: blur(2px);
+}
+.tour-title{
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+  color: rgba(255,255,255,0.95);
+}
+.tour-text{
+  font-size: 13px;
+  line-height: 1.35;
+  color: rgba(255,255,255,0.85);
+}
+
+/* (optional, falls SVG im JS genutzt wird) */
+.tour-svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+/* ✅ FIX: Button-Klasse aus deinem JS ist "tour-verstanden" */
+.tour-verstanden{
+  position: fixed;
+  z-index: 9002;
+  min-width: 220px;
+}
+
+/* =========================================================
+   BLACKOUT / END SCREEN
+========================================================= */
+.blackout{
+  position:fixed; inset:0;
+  background:#000;
+  z-index:60;
+}
+
+#screen-end{
+  position:fixed; inset:0;
+  background:#000;
+  display:none;
+  z-index:70;
+}
+#screen-end.is-active{ display:flex; align-items:center; justify-content:center; }
+
+.endcard{
+  width:min(820px, 92vw);
+  padding:28px;
+  color:#fff;
+  text-align:center;
+}
+
+.crash-title{ font-size: calc(18px * 1.7); font-weight:900; margin-bottom:8px; }
+.crash-sub{ font-size: calc(12px * 1.7); opacity:.78; }
+
+.end-question{
+  margin-top:0;
+  font-size: calc(22px * 1.7);
+  font-weight:900;
+}
+.end-small{
+  margin-top:10px;
+  font-size: calc(12px * 1.7);
+  opacity:.8;
+}
+
+/* Endscene: "Neu starten" Button 50% kleiner (Font + Padding) */
+#reveal-state .btn{
+  margin-top: 26px;
+  font-size: calc(14px * 1.7 * 0.5);
+  padding: calc(14px * 0.5) calc(18px * 0.5);
+  font-weight: 900;
+}
+
+/* Fakten Pop up: Text weiß + 30% schmaler */
+#end-fact-card.end-fact{
+  width: min(520px, 64vw);
+  margin: 44px auto 0 !important;
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+  color: #fff !important;
+}
+#end-fact-card.end-fact .modal-body{
+  color:#cc244f !important;
+}
+#end-fact-card.end-fact .btn.primary{
+  font-size: 0.70em;
+  padding: 10px 14px;
+}
+
+/* =========================================================
+   BIG SWITCH (Pink Mode)
+========================================================= */
+body.invert{ filter: none !important; }
+
+body.pinkmode{
+  --bg: #7a1433;
+  --panel: rgba(255, 205, 220, .10);
+  --card: rgba(255, 205, 220, .10);
+  --text: #ffffff;
+  --muted: rgba(255,255,255,0.78);
+  --line: rgba(255,255,255,0.22);
+
+  --orange: #ff4d7e;
+  --red: #ff2d63;
+}
+
+body.pinkmode{ background: var(--bg) !important; }
+
+body.pinkmode .panel,
+body.pinkmode .card,
+body.pinkmode .modal-card{
+  background: rgba(255, 205, 220, 0.10) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+}
+
+body.pinkmode .field,
+body.pinkmode .input,
+body.pinkmode .textarea{
+  background: rgba(255, 215, 230, 0.18) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  color: #ffffff !important;
+}
+
+body.pinkmode .panel-title,
+body.pinkmode .label{
+  color: rgba(255,255,255,0.92) !important;
+}
+
+body.pinkmode .btn.primary{
+  background: #ff3f78 !important;
+  border-color: #ff2d63 !important;
+  color: #ffffff !important;
+}
+body.pinkmode .btn{
+  background: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+  color: #fff !important;
+}
+
+body.pinkmode .todo-item{
+  background: rgba(255, 215, 230, 0.18) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  color: #fff !important;
+}
+body.pinkmode .todo-item .box{ border-color: rgba(255,255,255,0.45) !important; }
+body.pinkmode .todo-item .box.checked{
+  background: #ff3f78 !important;
+  border-color: #ff2d63 !important;
+}
+
+/* =========================================================
+   “Drüber geschrieben” Effekt (Feltful)
+========================================================= */
+body.pinkmode .field .label,
+body.pinkmode label.label{ position: relative; }
+
+body.pinkmode .field .label::before,
+body.pinkmode label.label::before{
+  content:"";
+  position:absolute;
+  left:-6px;
+  right:-6px;
+  top:50%;
+  height: 1.12em;
+  transform: translateY(-50%) rotate(-1.2deg);
+  background: rgba(255, 45, 99, 0.28);
+  border-radius: 6px;
+  z-index: 1;
+  pointer-events:none;
+}
+
+body.pinkmode .field .label::after,
+body.pinkmode label.label::after{
+  content: attr(data-ink);
+  position:absolute;
+  left:0;
+  top:50%;
+  transform: translateY(-54%) rotate(-1deg);
+  z-index: 2;
+
+  font-family: "Feltful", "Marker Felt", cursive;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  /* 20% dunkler als #ff2d63 */
+  color: #cc244f;
+  filter: brightness(0.75);
+
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.35),
+    0 0 10px rgba(204,36,79,0.18);
+
+  white-space: nowrap;
+  pointer-events:none;
+}
+
+body.pinkmode .field .label,
+body.pinkmode label.label{
+  color: rgba(255,255,255,0.92) !important;
+}
+
+/* =========================================================
+   COLLAPSE motion
+========================================================= */
+@keyframes microDriftA {
+  0%   { transform: translate(0px, 0px) rotate(0deg); }
+  50%  { transform: translate(1.2px, -0.8px) rotate(0.12deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+@keyframes microDriftB {
+  0%   { transform: translate(0px, 0px) rotate(0deg); }
+  50%  { transform: translate(-1.0px, 1.1px) rotate(-0.10deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+@keyframes microDriftC {
+  0%   { transform: translate(0px, 0px) rotate(0deg); }
+  50%  { transform: translate(0.9px, 0.8px) rotate(0.08deg); }
+  100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+
+body.collapse .panel{ animation: microDriftA 2.6s ease-in-out infinite; }
+body.collapse .field{ animation: microDriftB 2.2s ease-in-out infinite; }
+body.collapse .todo-item{ animation: microDriftC 2.0s ease-in-out infinite; }
+
+body.pinkmode.collapse .panel{ animation-duration: 2.08s; }
+body.pinkmode.collapse .field{ animation-duration: 1.76s; }
+body.pinkmode.collapse .todo-item{ animation-duration: 1.6s; }
+
+/* =========================================================
+   Responsive fallback
+========================================================= */
+@media (max-width: 900px){
+  .layout{ grid-template-columns: 1fr; }
+  .tour-card{
+    position: absolute !important;
+    width: min(340px, 44vw) !important;
+    margin: 0 !important;
+  }
+}
+/* ===== Flicker FIX: muss NACH pinkmode/invert kommen ===== */
+
+/* invert darf den Flicker nicht wegdrücken */
+body.invert { filter: none; } /* <- IMPORTANT: ohne !important */
+
+/* Flicker muss auch in pinkmode/invert gewinnen */
+body.flicker,
+body.pinkmode.flicker,
+body.invert.flicker,
+body.pinkmode.invert.flicker{
+  filter: brightness(2.2) contrast(2.2) grayscale(0.2) !important;
+  transition: none !important;
+}
